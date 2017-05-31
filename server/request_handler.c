@@ -1,49 +1,45 @@
-//
-// Created by pdata on 09.05.17.
-//
 
 #include <stdio.h>
 #include <memory.h>
-#include "command.h"
-#include "request_handler.h"
 #include "string_helpers.h"
+#include "request_handler.h"
 
-void process_request(request *req){
+void process_request(request *req, char *script_path) {
 
     command * current_command = req->commands_list->next;
+
     char * script_text = calloc(1024,sizeof(char));
-    const char * script_path = "/home/pdata/Podyplomowka/podstawy_c/zadanie/server/get_if_data.sh";
-
-
-    char * output = calloc(1024,sizeof(char));
+    char * output;
 
         while(current_command !=NULL){
-
-
-                script_text = concat_with_space(script_path,current_command->command_text);
+                // get bash script
+                script_text = concat_with_space(script_text,script_path);
+                // add commands sent by client as script arguments
+                // first argument is a specific command, next are interfaces
+                script_text = concat_with_space(script_text,current_command->command_text);
                 command_argument * tmp_a = current_command->command_arguments;
                 for(int i=0;i<current_command->command_arguments_counter;i++){
-                    perror("process_request_begin");
+                    // add arguments send by client <xml><command><argument></argument></command></xml>
                     script_text = concat_with_space(script_text,tmp_a->command_argument_value);
-                    perror("process_request_end");
                     tmp_a=tmp_a->next; // go to next attribute (example : <if>wlan0</if>
                 }
-                output = concat_with_new_line(output,execute_bash_script(script_text));
+                //execute bash script and assign its result into output temporary
+                output = execute_bash_script(script_text);
+                // set memory with empty string
+                memset(script_text,0,1024);
+                strcpy(req->response_text,concat_with_new_line(req->response_text,output))   ;
 
-
-
+            // go to next parsed command
             current_command = current_command->next;
-            strcpy(req->response_text,output);
+
         }
-
-
-
+        free(script_text);
 
 }
 
-
-const char  *  execute_bash_script(char *system_command){
+const char  *  execute_bash_script(char * system_command){
     FILE *pp;
+    //open new process and execute command
     pp = popen(system_command, "r");
     char *buff_ptr, buff[1024] = "";
     buff_ptr = buff;
@@ -63,10 +59,29 @@ const char  *  execute_bash_script(char *system_command){
 
 }
 
-//void validate_command(command *  cmd){
-//
-//    for(int i=0;i<COMMAND_COUNTER;i++){
-//        puts(aviable_commands[i]);
-//    }
-//
-//}
+// free memory functions
+void free_client_request(request *client_request){
+
+    free_commands_list(client_request->commands_list);
+    free(client_request->response_text);
+    free(client_request);
+}
+void free_commands_list(command *head){
+    command * tmp;
+
+    while(head!=NULL){
+        tmp=head;
+        if(tmp->command_arguments>0){
+            command_argument * cmd_arg = tmp->command_arguments;
+            command_argument *tmp_arg;
+            while(cmd_arg!=NULL){
+                tmp_arg=cmd_arg;
+                cmd_arg = cmd_arg->next;
+                free(tmp_arg);
+            }
+        }
+
+        head = head->next;
+        free(tmp);
+    }
+}

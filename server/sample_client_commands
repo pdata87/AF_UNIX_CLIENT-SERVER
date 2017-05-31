@@ -1,0 +1,4 @@
+<xml><list/><status/><addr_ip/><addr_hw/></xml>
+<xml><status><if>ens33</if></status></xml>
+<xml><status><if>ens33</if></status><addr_hw><if>ens33</if></addr_hw></xml>
+<xml><list/><status><if>ens33</if></status><addr_hw><if>ens33</if></addr_hw></xml>

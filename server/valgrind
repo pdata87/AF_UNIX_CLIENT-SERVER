@@ -1,0 +1,35 @@
+2017-05-16 - 10:18
+
+==20168== Process terminating with default action of signal 2 (SIGINT)
+==20168==    at 0x528C0A0: __poll_nocancel (syscall-template.S:84)
+==20168==    by 0x1092BD: main (main.c:128)
+==20168==
+==20168== HEAP SUMMARY:
+==20168==     in use at exit: 198,521 bytes in 301 blocks
+==20168==   total heap usage: 1,130 allocs, 829 frees, 759,664 bytes allocated
+==20168==
+==20168== LEAK SUMMARY:
+==20168==    definitely lost: 99,636 bytes in 146 blocks
+==20168==    indirectly lost: 93,606 bytes in 129 blocks
+==20168==      possibly lost: 0 bytes in 0 blocks
+==20168==    still reachable: 5,279 bytes in 26 blocks
+==20168==         suppressed: 0 bytes in 0 blocks
+==20168== Rerun with --leak-check=full to see details of leaked memory
+==20168==
+==20168== For counts of detected and suppressed errors, rerun with: -v
+==20168== ERROR SUMMARY: 1892 errors from 8 contexts (suppressed: 0 from 0)
+
+
+
+AFTER
+
+==13938== Process terminating with default action of signal 2 (SIGINT)
+==13938==    at 0x528C0A0: __poll_nocancel (syscall-template.S:84)
+==13938==    by 0x1094D1: main (in /home/pdata/Podyplomowka/podstawy_c/zadanie/server/server)
+==13938==
+==13938== HEAP SUMMARY:
+==13938==     in use at exit: 0 bytes in 0 blocks
+==13938==   total heap usage: 299 allocs, 299 frees, 166,088 bytes allocated
+==13938==
+==13938== All heap blocks were freed -- no leaks are possible
+

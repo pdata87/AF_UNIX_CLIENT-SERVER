@@ -62,6 +62,8 @@ if [ $# -gt 0 ]; then
             done
 
             fi;;
+        * )
+            echo "No such command defined in bash script";;
 
 
 
