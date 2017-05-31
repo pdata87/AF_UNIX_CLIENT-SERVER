@@ -1,5 +1,5 @@
 port="20000";
 max_clients="20";
 bash_script_path="/home/pdata/Podyplomowka/podstawy_c/zadanie/server/get_if_data.sh";
-welcome_message="Hello, please send message to server in properly formed xml structure <xml><command></command></xml>\n";
+welcome_message="Hello, please send message to server in properly formed xml structure <xml><command></command></xml>\r\n You can see sample commands in sample_commands file \r\n";
 poll_timeout="1800000";

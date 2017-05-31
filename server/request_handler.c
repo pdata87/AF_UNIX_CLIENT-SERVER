@@ -1,8 +1,10 @@
 
 #include <stdio.h>
 #include <memory.h>
+#include <sys/socket.h>
 #include "string_helpers.h"
 #include "request_handler.h"
+#include "configuration.h"
 
 void process_request(request *req, char *script_path) {
 
@@ -34,6 +36,59 @@ void process_request(request *req, char *script_path) {
 
         }
         free(script_text);
+
+}
+// this function parses data sent by client
+request *  handle_client_request(int client_fd) {
+
+    request * client_request= calloc(1,sizeof(request));
+    client_request->commands_list = calloc(1,sizeof(command));
+    client_request->response_text = calloc(1024,sizeof(char));
+    client_request->response_status = -1;
+    client_request->bytes_recv_from_client = recv(client_fd, client_request->client_input, sizeof(client_request->client_input), 0);
+
+    switch( client_request->bytes_recv_from_client){
+
+        case -1 :
+            perror("Failed to receive DATA from client: ");
+
+            client_request->response_status = -1;
+            strcpy(client_request->response_text,"");
+            break;
+
+        case 0 :
+            printf(" Connection closed by client\n");
+            client_request->response_status = 0;
+            strcpy(client_request->response_text,"Client closed connection");
+            break ;
+
+
+
+        default:
+            // if client send data, try parse
+            // number of properly (in case of any ) parsed commands
+            client_request->no_of_parsed_commands = parse_xml(client_request, strlen(client_request->client_input));
+
+            if(client_request->no_of_parsed_commands > 0){
+                client_request->response_status = client_request->no_of_parsed_commands;
+                process_request(client_request, get_config_option("bash_script_path"));
+
+            }
+
+
+
+            break;
+
+    }
+    // send response to client
+    send(client_fd, client_request->response_text, 1024, 0);
+
+    // clean xml lib structures;
+    xmlCleanupParser();
+    xmlDictCleanup();
+    xmlCleanupGlobals();
+    xmlCleanupMemory();
+    return client_request;
 
 }
 

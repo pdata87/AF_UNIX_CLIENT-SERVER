@@ -19,7 +19,7 @@ typedef struct request{
     command * commands_list;
 } request;
 
-
+request *  handle_client_request(int client_fd);
 void process_request(request *req, char *script_path);
 const char  *  execute_bash_script(char *system_command);
 void free_commands_list(command *head);
